@@ -25,7 +25,7 @@ def index():
     return "<h1>Code challenge</h1>"
 
 class Restaurants(Resource):
-    methods= ['GET', 'POST']
+    methods= ['GET']
 
     def get(self):
         restaurants = Restaurant.query.all()
@@ -102,12 +102,12 @@ class Restaurant_pizzas(Resource):
             response_data = {"errors": ["validation errors"]}
             return make_response(response_data, 400)
 
-        pizza = Pizza.query.get(pizza_id)
+        pizza = Pizza.query.filter_by(id=pizza_id).first()
         if not pizza:
             response_data = {"errors": ["Pizza not found"]}
             return make_response(response_data, 404)
 
-        restaurant = Restaurant.query.get(restaurant_id)
+        restaurant = Restaurant.query.filter_by(id=restaurant_id).first()
         if not restaurant:
             response_data = {"errors": ["Restaurant not found"]}
             return make_response(response_data, 404)
@@ -121,7 +121,6 @@ class Restaurant_pizzas(Resource):
         db.session.add(new_restaurant_pizza)
         db.session.commit()
 
-        # Prepare response data
         response_data = {
             "id": new_restaurant_pizza.id,
             "pizza": {
@@ -140,7 +139,7 @@ class Restaurant_pizzas(Resource):
         }
 
         return make_response(response_data, 201)
-
+    
 
 api.add_resource(Restaurants, "/restaurants")
 api.add_resource(Restaurant_by_id, "/restaurants/<int:id>")
